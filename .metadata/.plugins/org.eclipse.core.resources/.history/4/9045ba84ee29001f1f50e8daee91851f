@@ -1,0 +1,28 @@
+package com.spring.security.entity;
+
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class User {
+	
+	private int id;
+	private String userName;
+	private String password;
+	private String email;
+	public User(int id, String userName, String password, String email) {
+		super();
+		this.id = id;
+		this.userName = userName;
+		this.password = password;
+		this.email = email;
+	}
+	
+	
+
+}

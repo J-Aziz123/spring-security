@@ -1,0 +1,25 @@
+package com.spring.security;
+
+import java.util.stream.Stream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.spring.security.repository.UserRepository;
+
+@SpringBootApplication
+public class SpringSecurityApplication {
+	
+	@Autowired
+	UserRepository userRepository;
+
+	public void initUsers() {
+		List<User> users=Stream.of(null)
+	}
+	
+	public static void main(String[] args) {
+		SpringApplication.run(SpringSecurityApplication.class, args);
+	}
+
+}

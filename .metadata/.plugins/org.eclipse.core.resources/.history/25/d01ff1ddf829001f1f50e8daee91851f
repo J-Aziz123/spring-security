@@ -1,0 +1,20 @@
+package com.spring.security.config;
+
+import org.springframework.stereotype.Service;
+
+import com.spring.security.entity.SignUpRequest;
+import com.spring.security.entity.User;
+import com.spring.security.repository.UserRepository;
+
+@Service
+public class AuthenticationService {
+	
+	UserRepository userRepository;
+	
+	
+	public User signUp(SignUpRequest request) {
+		
+		
+	}
+
+}

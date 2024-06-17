@@ -1,0 +1,160 @@
+package com.spring.security.controller;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.engine.internal.ImmutableEntityEntry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.spring.security.config.AuthenticationService;
+import com.spring.security.config.JwtTokenFilter;
+import com.spring.security.dto.JwtAuthenticationResponse;
+import com.spring.security.dto.SignInRequest;
+import com.spring.security.dto.SignUpRequest;
+import com.spring.security.entity.AppUser;
+import com.spring.security.repository.UserRepository;
+import com.spring.security.service.JwtServiceImpl;
+import com.spring.security.service.UserServiceImpl;
+
+import io.jsonwebtoken.Jwts;
+import jakarta.validation.Valid;
+
+@RestController
+public class LoginController {
+	
+	 @Value("${security.jwt.secret-key}")
+	  private String jwtSecretKey;
+	 
+	 @Value("${security.jwl.issuer}")
+	 private String jwtIssuer;
+	  
+	  @Autowired
+	 private UserRepository userRepository;
+	 
+	 @Autowired
+	  UserServiceImpl userService;
+	  
+	  //@Autowired
+	  //JwtTokenFilter jwtAuthenticationFilter;
+	  
+	 @PostMapping("/sigUp")
+		public ResponseEntity<Object> signUp(@Valid @RequestBody SignUpRequest signUp, BindingResult result) {
+			
+		 if(result.hasErrors()) {
+			 var errorList=result.getAllErrors();
+			 var errorMap = new HashMap<String, String>();
+			 
+			 for(int i =0; i<errorList.size(); i++) {
+				 var error = (FieldError)errorList.get(0);
+				 errorMap.put(error.getField(), error.getDefaultMessage());
+			 }
+			 return ResponseEntity.badRequest().body(errorMap);
+		 }
+		 
+		 BCryptPasswordEncoder bcryptEncoder = new BCryptPasswordEncoder();
+		 AppUser user=new AppUser();
+		 
+		 user.setFirstName(signUp.getFirstName());
+		 user.setLastName(signUp.getLastName());
+		 user.setUserName(signUp.getUserName());
+		 user.setEmail(signUp.getEmail());
+		 user.setRole(signUp.getRole());
+		 user.setCreatedAt(new Date());
+		 user.setPassword(bcryptEncoder.encode(signUp.getPassword()));
+		 
+		 
+		 
+		return null;
+			
+		}
+	 
+	 
+	 
+	 
+	  public String createToken(AppUser appUser) {
+	        Instant now = Instant.now();
+	      
+	        JwtClaimsSet claims=  JwtClaimsSet.builder().issuer(jwtIssuer).issuedAt(now).expiresAt(now.plusSeconds(24*3600))
+	        		.subject(appUser.getUserName()).claim("role", appUser.getRole()).build();
+	        
+	        
+	        NimbusJwtEncoder encoder = new NimbusJwtEncoder(new ImmutableSecret<>(jwtSecretKey.getBytes()));
+	        
+	        JwtEncoderParameters params = JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
+	        
+	        return encoder.encode(params).getTokenValue();
+	    }
+	  
+	  
+	  
+
+	@GetMapping("/")
+	public String welcome() {
+		return "Welcome Page";
+		
+	}
+	
+	@GetMapping("/admin")
+	public String admin() {
+		return "Admin Page";
+	}
+	
+	@GetMapping("/client")
+	public String client() {
+		return "Client Page ";
+	}
+	
+	/*
+	 * @Autowired AuthenticationService authenticationService;
+	 * 
+	 * 
+	 * AuthenticationManager authenticationManager;
+	 * 
+	 * 
+	 * UserServiceImpl userService;
+	 * 
+	 * JwtServiceImpl jwtServiceImpl;
+	 * 
+	 * @PostMapping("/signUp") public ResponseEntity<User> signUp(@RequestBody
+	 * SignUpRequest request){ return
+	 * ResponseEntity.ok(authenticationService.signUp(request)); }
+	 * 
+	 * @PostMapping("/login") public ResponseEntity<JwtAuthenticationResponse>
+	 * login(@RequestBody SignInRequest request) throws Exception{ //return
+	 * ResponseEntity.ok(authenticationService.login(request));
+	 * 
+	 * try { authenticationManager.authenticate( new
+	 * UsernamePasswordAuthenticationToken(new SignUpRequest().getEmail(), new
+	 * SignUpRequest().getPassword()) ); }catch (Exception e){ throw new
+	 * Exception("Incorrect username or password", e); }
+	 * 
+	 * final UserDetails userDetails = userService.loadUserByUsername(new
+	 * SignUpRequest().getEmail()); final String jwt =
+	 * jwtServiceImpl.generateToken(userDetails);
+	 * 
+	 * return new ResponseEntity<>(new JwtAuthenticationResponse(jwt),
+	 * HttpStatus.ACCEPTED); }
+	 */	
+}

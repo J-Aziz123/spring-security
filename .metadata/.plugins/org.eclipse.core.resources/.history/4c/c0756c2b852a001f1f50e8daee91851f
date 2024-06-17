@@ -1,0 +1,35 @@
+package com.spring.security;
+
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+
+import com.spring.security.repository.UserRepository;
+
+import jakarta.annotation.PostConstruct;
+
+@SpringBootApplication
+public class SpringSecurityApplication {
+
+	/*
+	 * @Autowired UserRepository userRepository;
+	 * 
+	 * @PostConstruct public void initUsers() { List<User> users=Stream.of( new
+	 * User(1,"Neha",new
+	 * BCryptPasswordEncoder().encode("Pass","neha@gmail.com","user"), new User(1,
+	 * "Ana", new BCryptPasswordEncoder().encode( "pass1","ana@gmail.com","admin"),
+	 * new User(1,"Rosi",new
+	 * BCryptPasswordEncoder().encode("pass2","rosi@gmail.com","user")
+	 * ).collect(Collectors.toList()); userRepository.saveAll(users); }
+	 */
+	public static void main(String[] args) {
+		SpringApplication.run(SpringSecurityApplication.class, args);
+	}
+
+}

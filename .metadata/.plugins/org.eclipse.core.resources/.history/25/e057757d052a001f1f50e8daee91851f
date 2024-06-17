@@ -1,0 +1,28 @@
+package com.spring.security.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.spring.security.entity.SignUpRequest;
+import com.spring.security.entity.User;
+import com.spring.security.repository.UserRepository;
+
+@Service
+public class AuthenticationService {
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	
+	public User signUp(SignUpRequest request) {
+		User user=new User();
+		user.setUserName("Preeti");
+		user.setEmail(request.getEmail());
+		user.setPassword(request.getPassword());
+		user.setRole("admin");
+		
+		return userRepository.save(user);
+		
+	}
+
+}

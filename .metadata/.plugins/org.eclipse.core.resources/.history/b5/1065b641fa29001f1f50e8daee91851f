@@ -1,0 +1,37 @@
+package com.spring.security.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.SecurityBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+
+/**
+ * Never disable CSRF protection while leaving session management enabled! Doing so will open you up to a Cross-Site Request Forgery attack.
+ */
+
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+	 @Bean
+	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	        return http
+	                .csrf(csrf -> csrf.disable())   //Disable Cross-Site Request Forgery (CSRF)
+	                .authorizeRequests( auth -> auth
+	                        .anyRequest().authenticated())   //The user should be authenticated for any request in the application.
+	                
+	                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+	                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //Spring Security will never create an HttpSession and it will never use it to obtain the Security Context.
+	                .httpBasic(Customizer.withDefaults())  //Spring Security’s HTTP Basic Authentication support is enabled by default. However, as soon as any servlet-based configuration is provided, HTTP Basic must be explicitly provided.
+	                .build();
+	    }
+
+}
